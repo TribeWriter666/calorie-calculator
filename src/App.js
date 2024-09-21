@@ -1,6 +1,7 @@
 import './App.scss';
 import { IndexedDB }  from './SimpleIndexedDB'
 import ConsumedFood from './ConsumedFood';
+import ConsumptionHistoryItem from './ConsumptionHistoryItem'
 
 function App() {
   let consumptionHistory = [
@@ -22,9 +23,8 @@ function App() {
         <h2 className='app-section-title'>Consumption History</h2>
         <ul className='list-group'>
           {consumptionHistory.map(item =>
-            <li className='list-group-item d-flex justify-content-between'>
-              <span>{item.name}</span>
-              <span>{item.calories} Cal</span>
+            <li className='list-group-item p-0'>
+              <ConsumptionHistoryItem item={item} />
             </li>
           )}
         </ul>

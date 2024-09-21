@@ -1,10 +1,10 @@
 
 const nutritionTypes = [
-  {name: 'carbs', unit: 'g', caloriesPerUnit: 4},
-  {name: 'proteins', unit: 'g', caloriesPerUnit: 4},
-  {name: 'fats', unit: 'g', caloriesPerUnit: 9},
-  {name: 'vitamins', unit: 'g', caloriesPerUnit: 0},
-  {name: 'minerals', unit: 'g', caloriesPerUnit: 0},
+  {name: 'carbs', displayName: 'Carbohydrates', unit: 'g', caloriesPerUnit: 4},
+  {name: 'proteins', displayName: 'Proteins', unit: 'g', caloriesPerUnit: 4},
+  {name: 'fats', displayName: 'Fats', unit: 'g', caloriesPerUnit: 9},
+  {name: 'vitamins', displayName: 'Vitamins', unit: 'g', caloriesPerUnit: 0},
+  {name: 'minerals', displayName: 'Minerals', unit: 'g', caloriesPerUnit: 0},
 ];
 
 /**
@@ -31,3 +31,4 @@ nutritionTypes.forEach((nutritionType) => {
 })
 
 export default ConsumedFood;
+export { nutritionTypes };
