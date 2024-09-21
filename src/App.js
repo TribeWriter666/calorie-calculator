@@ -4,6 +4,7 @@ import ConsumptionHistoryItem from './ConsumptionHistoryItem'
 import UploadImage from './UploadImage'
 import { useDB } from './DBProvider'
 import { useEffect, useState } from 'react'
+import UserProfile from './UserProfile';
 
 function App() {
   const [uploading, setUploading] = useState(false)
@@ -79,6 +80,7 @@ function App() {
         className='container-sm'
         style={{ maxWidth: '600px', margin: '0 auto' }}
       >
+        <UserProfile />
         <UploadImage setUploading={setUploading} />
 
         <h2 className='app-section-title'>Consumption History</h2>
