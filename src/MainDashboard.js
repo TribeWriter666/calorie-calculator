@@ -29,7 +29,7 @@ export default function Dashboard() {
 
   return (
     <div className='container py-4'>
-      <h1 className='mb-4'>Simple Food Diary</h1>
+      <h1 className='mb-4'>How much did you eat today?</h1>
 
       <div className='card mb-4'>
         <div className='card-body'>
