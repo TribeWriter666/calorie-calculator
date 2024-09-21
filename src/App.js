@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import './App.scss'
-import ConsumedFood, { nutritionTypes } from './ConsumedFood'
+import ConsumedFood from './ConsumedFood'
 import ConsumptionHistoryItem from './ConsumptionHistoryItem'
 import UploadImage from './UploadImage'
 import { useDB } from './DBProvider'
-import UserProfile from './UserProfile'
+import ProfileAndNutritionSummary from './ProfileAndNutritionSummary'
 
 function App() {
   const [uploading, setUploading] = useState(false)
   const [responseList, setResponseList] = useState([])
   const [dbError, setdbError] = useState(null)
+  const [userProfile, setUserProfile] = useState(null)
   const db = useDB()
 
   useEffect(() => {
@@ -17,26 +18,19 @@ function App() {
       if (db) {
         try {
           let list = await db.getAllItems()
-          const consumedFoodList = list
-            .map((item) => {
-              try {
-                const consumedFood = new ConsumedFood(item)
-                console.log('Created ConsumedFood object:', consumedFood)
-                return consumedFood
-              } catch (error) {
-                console.error(
-                  'Error creating ConsumedFood object:',
-                  error,
-                  item
-                )
-                return null
-              }
-            })
-            .filter(Boolean) // Remove any null items
+          const foodItems = list.filter((item) => item.food_name)
+          const consumedFoodList = foodItems
+            .map((item) => new ConsumedFood(item))
             .sort(
               (a, b) => new Date(b.uploadDateTime) - new Date(a.uploadDateTime)
             )
           setResponseList(consumedFoodList)
+
+          // Load user profile
+          const profileData = list.find((item) => item.type === 'userProfile')
+          if (profileData) {
+            setUserProfile(profileData)
+          }
         } catch (error) {
           console.error('Error fetching data:', error)
           setdbError(error.message)
@@ -71,6 +65,22 @@ function App() {
     }
   }
 
+  const handleProfileUpdate = async (profile) => {
+    if (db) {
+      try {
+        const updatedProfile = { ...profile, type: 'userProfile' }
+        if (userProfile && userProfile.id) {
+          await db.updateItem(updatedProfile)
+        } else {
+          await db.addItem(updatedProfile)
+        }
+        setUserProfile(updatedProfile)
+      } catch (error) {
+        console.error('Error updating profile:', error)
+      }
+    }
+  }
+
   return (
     <div className='app'>
       <header>
@@ -80,21 +90,28 @@ function App() {
         className='container-sm'
         style={{ maxWidth: '600px', margin: '0 auto' }}
       >
-        <UserProfile consumedFoodList={responseList} />
         <UploadImage setUploading={setUploading} />
 
+        <ProfileAndNutritionSummary
+          consumedFoodList={responseList}
+          onProfileUpdate={handleProfileUpdate}
+          userProfile={userProfile}
+        />
+
         <h2 className='app-section-title'>Consumption History</h2>
-        <ul className='list-group'>
-          {responseList.map((item) => (
-            <li key={item.id} className='list-group-item p-0'>
-              <ConsumptionHistoryItem
-                item={item}
-                onDelete={handleDelete}
-                onUpdate={handleUpdate}
-              />
-            </li>
-          ))}
-        </ul>
+        <div className='consumption-history'>
+          <ul className='list-group'>
+            {responseList.map((item) => (
+              <li key={item.id} className='list-group-item p-0'>
+                <ConsumptionHistoryItem
+                  item={item}
+                  onDelete={handleDelete}
+                  onUpdate={handleUpdate}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   )

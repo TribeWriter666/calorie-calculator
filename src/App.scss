@@ -24,3 +24,47 @@
   margin-top: 12px;
   text-align: center;
 }
+
+.card {
+  margin-bottom: 1.5rem;
+
+  .card-header {
+    cursor: pointer;
+  }
+}
+
+.consumption-history {
+  margin-bottom: 2.5rem;
+
+  .list-group-item {
+    border-left: none;
+    border-right: none;
+
+    &:first-child {
+      border-top: none;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.progress-container {
+  margin-bottom: 0.5rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .progress {
+    height: 1.5rem;
+  }
+}
+
+.nutrition-summary {
+  .progress-bar {
+    transition: width 0.6s ease;
+  }
+}
