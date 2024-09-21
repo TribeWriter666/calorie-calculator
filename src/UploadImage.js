@@ -1,79 +1,129 @@
-import {useState,useContext} from 'react'
-import { useDB } from './DBProvider';
-import './UploadImage.css'
-import {analyzeImage} from './analyzeImage'
+import { useState } from 'react'
+import { useDB } from './DBProvider'
+import { analyzeImage } from './analyzeImage'
 
-export default function UploadImage({setUploading}) {
-        const  [selectedImage,setSelectedImage] = useState(null);
-        const  [previewURL,setPreviewURL] = useState(null);
-        const  [imageID,setImageID] = useState(null);
-        const  [base64Image,setBase64Image] =useState(null);
-        const db = useDB()
-        const [fileState,setFileState] = useState(null)
-        
-        const fileToBase64 = (file) => {
-                return new Promise((resolve, reject) => {
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    resolve(reader.result);  // Resolve the promise with the Base64 string
-                  };
-                  reader.onerror = reject;  // Handle errors
-            
-                  reader.readAsDataURL(file);  // Read file as Base64 URL
-                });
-              };
+export default function UploadImage({ setUploading }) {
+  const [selectedImage, setSelectedImage] = useState(null)
+  const [previewURL, setPreviewURL] = useState(null)
+  const [imageID, setImageID] = useState(null)
+  const [base64Image, setBase64Image] = useState(null)
+  const db = useDB()
+  const [fileState, setFileState] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
 
-        const handleImageChange = (e) =>{
-                const file = e.target.files[0];
-                setFileState(file)
-                if (file && file.type.startsWith('image/')){
-                        if(previewURL){
-                                URL.revokeObjectURL(previewURL)
-                                setPreviewURL(null)
-                        }
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        resolve(reader.result) // Resolve the promise with the Base64 string
+      }
+      reader.onerror = reject // Handle errors
 
-                        setSelectedImage(file);
-                        {/*TODO: free it when necessary */}
-                        const imageUrl = URL.createObjectURL(file);
-                        setPreviewURL(imageUrl);
-                }else{
-                        alert("Please select a valid image file");
-                }
+      reader.readAsDataURL(file) // Read file as Base64 URL
+    })
+  }
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]
+    setFileState(file)
+    if (file && file.type.startsWith('image/')) {
+      if (previewURL) {
+        URL.revokeObjectURL(previewURL)
+        setPreviewURL(null)
+      }
+
+      setSelectedImage(file)
+      {
+        /*TODO: free it when necessary */
+      }
+      const imageUrl = URL.createObjectURL(file)
+      setPreviewURL(imageUrl)
+    } else {
+      alert('Please select a valid image file')
+    }
+  }
+
+  const calculateImage = async (e) => {
+    setIsLoading(true)
+    setUploading(true)
+    if (!selectedImage) {
+      alert('Please select an image first')
+      setIsLoading(false)
+      setUploading(false)
+    } else {
+      try {
+        if (fileState) {
+          const base64Data = await fileToBase64(fileState)
+          const result = await analyzeImage(base64Data)
+          const id = await db.addItem(result)
+          console.log('Inserted Data id is ' + id)
         }
+      } catch (error) {
+        console.error('Error processing image:', error)
+        alert('An error occurred while processing the image. Please try again.')
+      } finally {
+        setIsLoading(false)
+        setUploading(false)
+      }
+    }
+  }
 
-         const calculateImage = async(e) =>{
-                setUploading(true)
-                if (!selectedImage) {
-                        alert("Please select iamge first");
-                }else{
-                        {/* Pre Process image */}
-                        
-                        {/* Upload process image into  and put respons to DB*/}
-                        {/*Convert image to base64 */}
-                        if(fileState){
-                                const base64Data = await fileToBase64(fileState)
-                                const result = await analyzeImage(base64Data) //returns a parsed json
-                                //TODO: the id of data is only going to be avablie here
-                                const id = await db.addItem(result)
-                                console.log("Inserted Data id is "+ id)
-                        }
-                        setUploading(false)
-                }
-        }
+  return (
+    <div className='container mt-4'>
+      <div className='row justify-content-center'>
+        <div className='col-md-6'>
+          <div className='card'>
+            <div className='card-body'>
+              <h5 className='card-title mb-4'>Upload Image</h5>
+              <div className='mb-3'>
+                <label
+                  htmlFor='file-upload'
+                  className='btn btn-outline-primary w-100'
+                >
+                  {previewURL ? 'Change Image' : 'Choose an Image'}
+                </label>
+                <input
+                  id='file-upload'
+                  type='file'
+                  accept='image/*'
+                  onChange={handleImageChange}
+                  className='d-none'
+                />
+              </div>
 
-        return (
-                <div className ="image-upload">
-                        {/*Image selector */}
-                        <label htmlFor="file-upload">Choose an Image</label>
-                        <input id ='file-upload' type='file' accept='image/*' onChange={handleImageChange}></input>
-                        {/* Image preview */}
-                        <div className='iamge-preview'>
-                                <img src = {previewURL} alt = "image preview"></img>
-                        </div>
-
-                        {/*Upload button*/}
-                        <button onClick={calculateImage}>Calculate My Nutrition</button>
-
+              {previewURL && (
+                <div className='mb-3 text-center'>
+                  <img
+                    src={previewURL}
+                    alt='image preview'
+                    className='img-fluid'
+                    style={{ maxHeight: '30vh' }}
+                  />
                 </div>
-        );
+              )}
+
+              <button
+                onClick={calculateImage}
+                className='btn btn-primary w-100'
+                disabled={!selectedImage || isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <span
+                      className='spinner-border spinner-border-sm me-2'
+                      role='status'
+                      aria-hidden='true'
+                    ></span>
+                    Calculating...
+                  </>
+                ) : (
+                  'Calculate My Nutrition'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
