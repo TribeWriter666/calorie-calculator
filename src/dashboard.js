@@ -1,24 +1,40 @@
 import { useState } from 'react'
-import { analyzeImage } from './analyzeImage' // Function should now accept description as a second parameter
+import { analyzeImage } from './analyzeImage'
+import UserProfile from './UserProfile';
+import { calculateRDI, calculateTotalCalories } from './utils';
 
 export default function Dashboard() {
-  const [entries, setEntries] = useState([])
-  const [isUploading, setIsUploading] = useState(false)
-  const [editingEntry, setEditingEntry] = useState(null)
-  const [editDescription, setEditDescription] = useState('')
-  const [isUpdating, setIsUpdating] = useState(false)
+  const [entries, setEntries] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
+  const [dailyRDI, setDailyRDI] = useState(null);
+  const [editingEntry, setEditingEntry] = useState(null);
+  const [editDescription, setEditDescription] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleProfileUpdate = (profile) => {
+    console.log('Updated profile:', profile);
+    setUserProfile(profile);
+    const rdi = calculateRDI(profile);
+    console.log('Calculated RDI:', rdi);
+    setDailyRDI(rdi);
+  };
+
+  const totalCalories = calculateTotalCalories(entries);
+  const calorieStatus = dailyRDI ? (totalCalories > dailyRDI ? 'over' : 'under') : null;
+  const calorieDifference = dailyRDI ? Math.abs(totalCalories - dailyRDI) : null;
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      setIsUploading(true)
+      setIsUploading(true);
       try {
-        const reader = new FileReader()
+        const reader = new FileReader();
         reader.onloadend = async () => {
-          const base64Image = reader.result.split(',')[1] // Extract base64 data
+          const base64Image = reader.result.split(',')[1]; // Extract base64 data
 
           // Call OpenAI API with the image
-          const analysisResult = await analyzeImage(base64Image, '')
+          const analysisResult = await analyzeImage(base64Image, '');
 
           if (analysisResult) {
             const newEntry = {
@@ -26,17 +42,17 @@ export default function Dashboard() {
               image: reader.result,
               timestamp: new Date().toLocaleString(),
               analysis: analysisResult,
-            }
-            setEntries((prev) => [newEntry, ...prev])
+            };
+            setEntries((prev) => [newEntry, ...prev]);
           } else {
-            console.error('Failed to analyze image')
+            console.error('Failed to analyze image');
           }
-          setIsUploading(false)
-        }
-        reader.readAsDataURL(file)
+          setIsUploading(false);
+        };
+        reader.readAsDataURL(file);
       } catch (error) {
-        console.error('Error uploading image:', error)
-        setIsUploading(false)
+        console.error('Error uploading image:', error);
+        setIsUploading(false);
       }
     }
   }
@@ -83,6 +99,31 @@ export default function Dashboard() {
   return (
     <div className='container py-4'>
       <h1 className='mb-4'>How much did you eat today?</h1>
+
+      {!userProfile && (
+        <div className='card mb-4'>
+          <div className='card-body'>
+            <h2 className='h4 mb-3'>User Profile</h2>
+            <UserProfile onProfileUpdate={handleProfileUpdate} />
+          </div>
+        </div>
+      )}
+
+      {userProfile && (
+        <div className='card mb-4'>
+          <div className='card-body'>
+            <h2 className='h4 mb-3'>Daily Calorie Summary</h2>
+            <p>Recommended Daily Intake: {dailyRDI} calories</p>
+            <p>Total Calories Consumed: {totalCalories} calories</p>
+            {calorieStatus && calorieDifference && (
+              <p>
+                You are currently {calorieStatus} your daily recommended intake by{' '}
+                <strong>{calorieDifference} calories</strong>.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className='card mb-4'>
         <div className='card-body'>
