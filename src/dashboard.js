@@ -17,13 +17,17 @@ export default function Dashboard() {
           // Call OpenAI API with the image
           const analysisResult = await analyzeImage(base64Image)
 
-          const newEntry = {
-            id: Date.now(),
-            image: reader.result,
-            timestamp: new Date().toLocaleString(),
-            analysis: analysisResult,
+          if (analysisResult) {
+            const newEntry = {
+              id: Date.now(),
+              image: reader.result,
+              timestamp: new Date().toLocaleString(),
+              analysis: analysisResult,
+            }
+            setEntries((prev) => [newEntry, ...prev])
+          } else {
+            console.error('Failed to analyze image')
           }
-          setEntries((prev) => [newEntry, ...prev])
           setIsUploading(false)
         }
         reader.readAsDataURL(file)
@@ -105,9 +109,27 @@ export default function Dashboard() {
                       }}
                     />
                     <div>
-                      <p className='mb-0 fw-bold'>Food Entry</p>
+                      <p className='mb-0 fw-bold'>
+                        {entry.analysis.description}
+                      </p>
                       <small className='text-muted'>{entry.timestamp}</small>
-                      <p className='mt-2'>{entry.analysis}</p>
+                      <p className='mt-2'>
+                        Calories: {entry.analysis.calories} | Serving Size:{' '}
+                        {entry.analysis.serving_size} | Confidence:{' '}
+                        {entry.analysis.confidence_score.toFixed(1)}%
+                      </p>
+                      <p>
+                        Protein: {entry.analysis.macronutrients.protein} |
+                        Carbs: {entry.analysis.macronutrients.carbohydrates} |
+                        Fats: {entry.analysis.macronutrients.fats} | Fiber:{' '}
+                        {entry.analysis.macronutrients.fiber}
+                      </p>
+                      <p>
+                        Exercise Equivalent:{' '}
+                        {entry.analysis.exercise_equivalent.walking_minutes}{' '}
+                        minutes of walking
+                      </p>
+                      <small>{entry.analysis.exercise_equivalent.notes}</small>
                     </div>
                   </div>
                 </li>
