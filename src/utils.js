@@ -1,8 +1,8 @@
 export const calculateRDI = (profile) => {
-    const { gender, age, height, weight, activityLevel } = profile;
+    const { sex, age, height, weight, activityLevel } = profile;
   
     // Check if all required values are present and valid
-    if (!gender || !age || !height || !weight || !activityLevel) {
+    if (!sex || !age || !height || !weight || !activityLevel) {
         console.error('Invalid profile data:', profile);
         return 0; // Return 0 or some default value
     }
@@ -20,7 +20,7 @@ export const calculateRDI = (profile) => {
 
     let bmr;
 
-    if (gender === 'male') {
+    if (sex === 'male') {
         bmr = 88.362 + (13.397 * numWeight) + (4.799 * numHeight) - (5.677 * numAge);
     } else {
         bmr = 447.593 + (9.247 * numWeight) + (3.098 * numHeight) - (4.330 * numAge);
@@ -32,11 +32,16 @@ export const calculateRDI = (profile) => {
         high: 1.9    // Very active (hard exercise)
     };
 
+    // Check if activityLevel is valid and prompt the user if necessary
+    if (!activityMultipliers[activityLevel]) {
+        console.warn("Invalid activity level. Defaulting to 'low' (sedentary).");
+    }
+
     const multiplier = activityMultipliers[activityLevel] || 1.2; // Default to low if invalid
 
     return Math.round(bmr * multiplier);
 };
 
-export const calculateTotalCalories = (entries) => {
-    return entries.reduce((total, entry) => total + (entry?.analysis?.calories || 0), 0);
+export const calculateTotalCalories = (meals) => {
+    return meals.reduce((total, meal) => total + meal.calories, 0);
 };

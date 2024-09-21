@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const UserProfile = ({ onProfileUpdate }) => {
-  const [gender, setGender] = useState('');
+  const [sex, setsex] = useState('');
   const [age, setAge] = useState('');
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
@@ -10,7 +10,7 @@ const UserProfile = ({ onProfileUpdate }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onProfileUpdate({ 
-      gender, 
+      sex, 
       age: parseInt(age), 
       height: parseInt(height), 
       weight: parseInt(weight), 
@@ -21,9 +21,9 @@ const UserProfile = ({ onProfileUpdate }) => {
   return (
     <form onSubmit={handleSubmit} className="mb-4">
       <div className="mb-3">
-        <label htmlFor="gender" className="form-label">Gender</label>
-        <select id="gender" className="form-select" value={gender} onChange={(e) => setGender(e.target.value)} required>
-          <option value="">Select gender</option>
+        <label htmlFor="sex" className="form-label">sex</label>
+        <select id="sex" className="form-select" value={sex} onChange={(e) => setsex(e.target.value)} required>
+          <option value="">Select sex</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
         </select>
