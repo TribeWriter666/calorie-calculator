@@ -1,9 +1,12 @@
 import { useState } from 'react'
-import { analyzeImage } from './analyzeImage' // Assuming we'll create this function
+import { analyzeImage } from './analyzeImage' // Function should now accept description as a second parameter
 
 export default function Dashboard() {
   const [entries, setEntries] = useState([])
   const [isUploading, setIsUploading] = useState(false)
+  const [editingEntry, setEditingEntry] = useState(null)
+  const [editDescription, setEditDescription] = useState('')
+  const [isUpdating, setIsUpdating] = useState(false)
 
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0]
@@ -15,7 +18,7 @@ export default function Dashboard() {
           const base64Image = reader.result.split(',')[1] // Extract base64 data
 
           // Call OpenAI API with the image
-          const analysisResult = await analyzeImage(base64Image)
+          const analysisResult = await analyzeImage(base64Image, '')
 
           if (analysisResult) {
             const newEntry = {
@@ -34,6 +37,45 @@ export default function Dashboard() {
       } catch (error) {
         console.error('Error uploading image:', error)
         setIsUploading(false)
+      }
+    }
+  }
+
+  const handleDelete = (id) => {
+    setEntries((prev) => prev.filter((entry) => entry.id !== id))
+  }
+
+  const handleEdit = (entry) => {
+    setEditingEntry(entry)
+    setEditDescription(entry.analysis.description)
+  }
+
+  const handleUpdate = async () => {
+    if (editingEntry) {
+      setIsUpdating(true)
+      try {
+        const updatedAnalysis = await analyzeImage(
+          editingEntry.image.split(',')[1],
+          editDescription
+        )
+
+        if (updatedAnalysis) {
+          setEntries((prev) =>
+            prev.map((entry) =>
+              entry.id === editingEntry.id
+                ? { ...entry, analysis: updatedAnalysis }
+                : entry
+            )
+          )
+          setEditingEntry(null)
+          setEditDescription('')
+        } else {
+          console.error('Failed to update analysis')
+        }
+      } catch (error) {
+        console.error('Error updating entry:', error)
+      } finally {
+        setIsUpdating(false)
       }
     }
   }
@@ -108,7 +150,7 @@ export default function Dashboard() {
                         objectFit: 'cover',
                       }}
                     />
-                    <div>
+                    <div className='flex-grow-1'>
                       <p className='mb-0 fw-bold'>
                         {entry.analysis.description}
                       </p>
@@ -131,12 +173,72 @@ export default function Dashboard() {
                       </p>
                       <small>{entry.analysis.exercise_equivalent.notes}</small>
                     </div>
+                    <div className='ms-3'>
+                      <button
+                        className='btn btn-sm btn-outline-primary me-2'
+                        onClick={() => handleEdit(entry)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className='btn btn-sm btn-outline-danger'
+                        onClick={() => handleDelete(entry.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </li>
               ))}
             </ul>
           </div>
         </div>
+
+        {editingEntry && (
+          <div className='col-md-6 mb-4'>
+            <h2 className='h4 mb-3'>Edit Entry</h2>
+            <div className='card'>
+              <div className='card-body'>
+                <img
+                  src={editingEntry.image}
+                  alt='Editing food'
+                  className='img-fluid mb-3'
+                  style={{ maxHeight: '200px', objectFit: 'cover' }}
+                />
+                <div className='mb-3'>
+                  <label htmlFor='editDescription' className='form-label'>
+                    Description
+                  </label>
+                  <input
+                    type='text'
+                    className='form-control'
+                    id='editDescription'
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                  />
+                </div>
+                <button
+                  className='btn btn-primary'
+                  onClick={handleUpdate}
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? (
+                    <>
+                      <span
+                        className='spinner-border spinner-border-sm me-2'
+                        role='status'
+                        aria-hidden='true'
+                      ></span>
+                      Updating...
+                    </>
+                  ) : (
+                    'Update'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className='col-md-6'>
           <h2 className='h4 mb-3'>Image Gallery</h2>

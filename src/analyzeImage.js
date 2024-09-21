@@ -5,22 +5,24 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 })
 
-export async function analyzeImage(base64Image) {
+export const analyzeImage = async (base64Image, description = '') => {
   try {
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini', // Use the appropriate model
+      model: 'gpt-4o-2024-08-06', // Use the appropriate model
       messages: [
         {
           role: 'system',
           content:
-            'You are a helpful assistant that analyzes food images and provides nutritional information.',
+            'You are a helpful assistant that analyzes food images and provides nutritional information. If user input provided, use it to analyze the image so that you can provide a more accurate analysis.',
         },
         {
           role: 'user',
           content: [
             {
               type: 'text',
-              text: 'Analyze this food image and provide information in the specified JSON format.',
+              text: `Analyze this food image and provide information in the specified JSON format. ${
+                description ? 'user input: ' + description : ''
+              }`,
             },
             {
               type: 'image_url',
