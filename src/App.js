@@ -15,9 +15,14 @@ function App() {
     const fetch_data = async () => {
       if (db) {
         let list = await db.getAllItems()
-        const consumedFoodList = list.map((item) => new ConsumedFood(item))
+        const consumedFoodList = list
+          .map((item) => new ConsumedFood(item))
+          .sort(
+            (a, b) => new Date(b.uploadDateTime) - new Date(a.uploadDateTime)
+          )
         setResponseList(consumedFoodList)
         console.log('list setted')
+        console.log(responseList)
       }
     }
     fetch_data()

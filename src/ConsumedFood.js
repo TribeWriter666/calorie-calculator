@@ -29,6 +29,7 @@ class ConsumedFood {
       fiber: parseInt(data.macronutrients.fiber),
     }
     this.exercise_equivalent = data.exercise_equivalent
+    this.uploadDateTime = data.uploadDateTime || new Date().toISOString() // Add this line
   }
 }
 

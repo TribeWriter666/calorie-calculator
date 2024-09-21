@@ -55,7 +55,15 @@ export default function UploadImage({ setUploading }) {
         if (fileState) {
           const base64Data = await fileToBase64(fileState)
           const result = await analyzeImage(base64Data)
-          const id = await db.addItem(result)
+
+          // Add upload date and time to the result
+          const uploadDateTime = new Date().toISOString()
+          const dataToStore = {
+            ...result,
+            uploadDateTime: uploadDateTime,
+          }
+
+          const id = await db.addItem(dataToStore)
           console.log('Inserted Data id is ' + id)
         }
       } catch (error) {

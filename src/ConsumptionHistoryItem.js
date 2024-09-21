@@ -4,6 +4,13 @@ import { nutritionTypes } from './ConsumedFood'
 function ConsumptionHistoryItem({ item }) {
   const [expanded, setExpanded] = useState(false)
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString)
+    const day = date.getDate()
+    const month = date.toLocaleString('default', { month: 'short' }).slice(0, 3)
+    return `${day} ${month}`
+  }
+
   return (
     <div
       className='d-flex flex-column'
@@ -15,7 +22,12 @@ function ConsumptionHistoryItem({ item }) {
             className='btn m-0 d-flex w-100 justify-content-between'
             onClick={() => setExpanded(false)}
           >
-            <span className='fw-semibold'>{item.name}</span>
+            <span>
+              <span className='opacity-50 me-2 '>
+                {formatDate(item.uploadDateTime)}
+              </span>
+              <span className='fw-semibold'>{item.name}</span>
+            </span>
             <span>
               <i className='bi bi-chevron-bar-up'></i>
             </span>
@@ -78,8 +90,14 @@ function ConsumptionHistoryItem({ item }) {
           className='btn m-0 d-flex w-100 justify-content-between'
           onClick={() => setExpanded(true)}
         >
-          <span>{item.name}</span>
-          <span>{item.calories} Cal</span>
+          <span>
+            <span className='opacity-50 me-2 '>
+              {formatDate(item.uploadDateTime)}
+            </span>
+            <span>{item.name}</span>
+          </span>
+
+          <span className=''>{item.calories} Cal</span>
         </button>
       )}
     </div>
