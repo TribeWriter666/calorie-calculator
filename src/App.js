@@ -1,19 +1,15 @@
 import './App.scss';
-import {IndexedDB}  from'./SimpleIndexedDB'
+import { DBProvider } from './DBProvider'; 
+import UploadImage from './UploadImage';
 
 function App() {
-  const db = new IndexedDB("TestDatabase","TestStore")
-  db.openDB().then(()=>{
-    console.log("DB sucessfully opened")
-  }).catch((error)=>{
-    console.error("Error while opening db")
-  })
   return (
     <div className="App">
       <h1>Title TBD</h1>
-      <button className="btn btn-primary">Upload</button>
+      <UploadImage/>
     </div>
   );
 }
+
 
 export default App;

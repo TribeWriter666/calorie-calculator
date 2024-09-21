@@ -1,4 +1,4 @@
-export class SimpleIndexedDB {
+export default class SimpleIndexedDB {
   constructor(dbName, storeName) {
     this.dbName = dbName;
     this.storeName = storeName;
@@ -144,3 +144,4 @@ export class SimpleIndexedDB {
     });
   }
 }
+
