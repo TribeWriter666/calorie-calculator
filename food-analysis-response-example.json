@@ -1,0 +1,27 @@
+{
+  "id": "chatcmpl-A9ow7R7bvYvdApUgy1S6lYHp2MdEM",
+  "object": "chat.completion",
+  "created": 1726904115,
+  "model": "gpt-4o-mini-2024-07-18",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"description\":\"These are steamed buns filled with a mix of tofu, herbs, and nuts, often served with a sauce or glaze for added flavor. The dish showcases a combination of textures and flavors, including soft buns and crunchy toppings.\",\"calories\":300,\"serving_size\":\"2 buns\",\"confidence_score\":0.85,\"macronutrients\":{\"protein\":\"15g\",\"carbohydrates\":\"40g\",\"fats\":\"10g\",\"fiber\":\"4g\"},\"exercise_equivalent\":{\"walking_minutes\":45,\"notes\":\"The calorie estimate assumes moderate ingredients; actual values may vary based on ingredients and portion size.\"}}",
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 36991,
+    "completion_tokens": 124,
+    "total_tokens": 37115,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "system_fingerprint": "fp_e9627b5346"
+}
