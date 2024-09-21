@@ -1,19 +1,21 @@
 @import "bootstrap/scss/bootstrap";
 @import "bootstrap-icons/font/bootstrap-icons";
+// import font
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 
 .app > header {
   display: flex;
-  align-items: center;
+  align-items: left;
   justify-content: center;
   text-align: center;
-
-  margin: 0 0 12px 0;
-  height: 64px;
+  margin: 20px 0 0 0;
+  height: 50px;
   border-bottom: 1px solid black;
 
   & > h1 {
-    font-size: 1em;
+    font-family: "Bebas Neue", sans-serif;
     font-weight: 400;
+    text-align:center;
   }
 }
 
