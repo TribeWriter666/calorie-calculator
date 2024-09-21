@@ -69,28 +69,12 @@ export default function UploadImage({ setUploading }) {
   }
 
   return (
-    <div className='container mt-4'>
-      <div className='row justify-content-center'>
-        <div className='col-md-6'>
-          <div className='card'>
-            <div className='card-body'>
-              <h5 className='card-title mb-4'>Upload Image</h5>
-              <div className='mb-3'>
-                <label
-                  htmlFor='file-upload'
-                  className='btn btn-outline-primary w-100'
-                >
-                  {previewURL ? 'Change Image' : 'Choose an Image'}
-                </label>
-                <input
-                  id='file-upload'
-                  type='file'
-                  accept='image/*'
-                  onChange={handleImageChange}
-                  className='d-none'
-                />
-              </div>
-
+    <div className='mt-4'>
+      <div className='w-100'>
+        <div className='card'>
+          <div className='card-body'>
+            <h5 className='card-title mb-4'>Upload Image</h5>
+            <div className='mb-3'>
               {previewURL && (
                 <div className='mb-3 text-center'>
                   <img
@@ -101,26 +85,39 @@ export default function UploadImage({ setUploading }) {
                   />
                 </div>
               )}
-
-              <button
-                onClick={calculateImage}
-                className='btn btn-primary w-100'
-                disabled={!selectedImage || isLoading}
+              <label
+                htmlFor='file-upload'
+                className='btn btn-outline-primary w-100'
               >
-                {isLoading ? (
-                  <>
-                    <span
-                      className='spinner-border spinner-border-sm me-2'
-                      role='status'
-                      aria-hidden='true'
-                    ></span>
-                    Calculating...
-                  </>
-                ) : (
-                  'Calculate My Nutrition'
-                )}
-              </button>
+                {previewURL ? 'Change Image' : 'Choose an Image'}
+              </label>
+              <input
+                id='file-upload'
+                type='file'
+                accept='image/*'
+                onChange={handleImageChange}
+                className='d-none'
+              />
             </div>
+
+            <button
+              onClick={calculateImage}
+              className='btn btn-primary w-100'
+              disabled={!selectedImage || isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <span
+                    className='spinner-border spinner-border-sm me-2'
+                    role='status'
+                    aria-hidden='true'
+                  ></span>
+                  Calculating...
+                </>
+              ) : (
+                'Calculate My Nutrition'
+              )}
+            </button>
           </div>
         </div>
       </div>

@@ -1,36 +1,35 @@
-//  macronutrients: { protein: '15g', carbohydrates: '40g', fats: '10g', fiber: '4g' },
-
-const nutritionTypes = [
-  {name: 'carbohydrates', displayName: 'Carbohydrates', unit: 'g', caloriesPerUnit: 4},
-  {name: 'protein', displayName: 'Proteins', unit: 'g', caloriesPerUnit: 4},
-  {name: 'fats', displayName: 'Fats', unit: 'g', caloriesPerUnit: 9},
-  {name: 'fiber', displayName: 'Fiber', unit: 'g', caloriesPerUnit: 0},
+export const nutritionTypes = [
+  {
+    name: 'carbohydrates',
+    displayName: 'Carbohydrates',
+    unit: 'g',
+    caloriesPerUnit: 4,
+  },
+  { name: 'protein', displayName: 'Protein', unit: 'g', caloriesPerUnit: 4 },
+  { name: 'fats', displayName: 'Fats', unit: 'g', caloriesPerUnit: 9 },
+  { name: 'fiber', displayName: 'Fiber', unit: 'g', caloriesPerUnit: 0 },
   //{name: 'vitamins', displayName: 'Vitamins', unit: 'g', caloriesPerUnit: 0},
   //{name: 'minerals', displayName: 'Minerals', unit: 'g', caloriesPerUnit: 0},
-];
+]
 
 /**
  * A data class for a single piece of food consumed, includes its nutritional value
  */
 class ConsumedFood {
-  constructor(name, nutritions = {}) {
-    this.name = name;
-    this.nutritions = nutritions;
-  }
-
-  get calories() {
-    // Add up calories of all nutritions.
-    return nutritionTypes.reduce((acc, type) => acc + type.caloriesPerUnit * (this.nutritions[type.name] || 0), 0);
+  constructor(data) {
+    this.name = data.food_name
+    this.description = data.description
+    this.calories = data.calories
+    this.serving_size = data.serving_size
+    this.confidence_score = data.confidence_score
+    this.nutritions = {
+      carbohydrates: parseInt(data.macronutrients.carbohydrates),
+      protein: parseInt(data.macronutrients.protein),
+      fats: parseInt(data.macronutrients.fats),
+      fiber: parseInt(data.macronutrients.fiber),
+    }
+    this.exercise_equivalent = data.exercise_equivalent
   }
 }
 
-// Add getters and setters for each nutrition onto the class.
-nutritionTypes.forEach((nutritionType) => {
-  Object.defineProperty(ConsumedFood.prototype, nutritionType.name, {
-    get: function() { return this.nutritions[nutritionType.name] || 0; },
-    set: function(newVal) { this.nutritions[nutritionType.name] = newVal; }
-  })
-})
-
-export default ConsumedFood;
-export { nutritionTypes };
+export default ConsumedFood
