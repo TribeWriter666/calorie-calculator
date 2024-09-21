@@ -1,12 +1,12 @@
-import './App.scss';
+import './App.scss'
+import Dashboard from './dashboard'
 
 function App() {
   return (
-    <div className="App">
-      <h1>Title TBD</h1>
-      <button className="btn btn-primary">Upload</button>
+    <div className='App'>
+      <Dashboard />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
