@@ -119,14 +119,36 @@ export default class SimpleIndexedDB {
       const transaction = this.db.transaction([this.storeName], 'readwrite')
       const store = transaction.objectStore(this.storeName)
 
-      const request = store.put(data)
+      // First, get the existing item
+      const getRequest = store.get(data.id)
 
-      request.onsuccess = () => {
-        resolve(`Item with ID ${data.id} updated successfully.`)
+      getRequest.onsuccess = () => {
+        const existingItem = getRequest.result
+
+        // Preserve the imageBlob if it's not being updated
+        if (!data.imageBlob && existingItem.imageBlob) {
+          data.imageBlob = existingItem.imageBlob
+        }
+
+        // If there's an imageBlob, create a new URL
+        if (data.imageBlob) {
+          data.imageURL = URL.createObjectURL(data.imageBlob)
+        }
+
+        // Now update the item
+        const updateRequest = store.put(data)
+
+        updateRequest.onsuccess = () => {
+          resolve(`Item with ID ${data.id} updated successfully.`)
+        }
+
+        updateRequest.onerror = (event) => {
+          reject(`Failed to update item: ${event.target.errorCode}`)
+        }
       }
 
-      request.onerror = (event) => {
-        reject(`Failed to update item: ${event.target.errorCode}`)
+      getRequest.onerror = (event) => {
+        reject(`Failed to retrieve item for update: ${event.target.errorCode}`)
       }
     })
   }

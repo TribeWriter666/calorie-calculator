@@ -7,7 +7,10 @@ function ConsumptionHistoryItem({ item, onDelete, onUpdate }) {
   const [imageURL, setImageURL] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
   const [editDescription, setEditDescription] = useState(item.description)
-  const [isUpdating, setIsUpdating] = useState(false)
+
+  const [isUploading, setIsUploading] = useState(false)
+
+  console.log('Rendering ConsumptionHistoryItem, isUploading:', isUploading) // Debug log
 
   console.log('ConsumptionHistoryItem received item:', item) // Add this line
 
@@ -35,21 +38,42 @@ function ConsumptionHistoryItem({ item, onDelete, onUpdate }) {
   }
 
   const handleUpdate = async () => {
-    setIsUpdating(true)
+    setIsUploading(true)
+    console.log('Setting isUploading to true') // Debug log
+
     try {
-      const updatedAnalysis = await analyzeImage(item.imageURL, editDescription)
-      if (updatedAnalysis) {
-        onUpdate({ ...item, ...updatedAnalysis })
-        setIsEditing(false)
-      } else {
-        console.error('Failed to update analysis')
+      // Convert image URL to base64
+      const response = await fetch(item.imageURL)
+      const blob = await response.blob()
+      const reader = new FileReader()
+
+      reader.onloadend = async () => {
+        const base64data = reader.result
+
+        const updatedAnalysis = await analyzeImage(base64data, editDescription)
+        if (updatedAnalysis) {
+          // Include the imageBlob in the update
+          onUpdate({ ...item, ...updatedAnalysis, imageBlob: item.imageBlob })
+          setIsEditing(false)
+        } else {
+          console.error('Failed to update analysis')
+        }
+
+        setIsUploading(false)
+        console.log('Setting isUploading to false') // Debug log
       }
+
+      reader.readAsDataURL(blob)
     } catch (error) {
       console.error('Error updating entry:', error)
-    } finally {
-      setIsUpdating(false)
+      setIsUploading(false)
+      console.log('Setting isUploading to false due to error') // Debug log
     }
   }
+
+  useEffect(() => {
+    console.log('isUploading changed:', isUploading) // Debug log
+  }, [isUploading])
 
   const handleDelete = () => {
     console.log('Deleting item:', item) // Add this line
@@ -79,7 +103,7 @@ function ConsumptionHistoryItem({ item, onDelete, onUpdate }) {
               </span>
             </button>
 
-            <div className='container mb-2 d-flex justify-content-between gap-3'>
+            <div className='container d-flex justify-content-between gap-3'>
               <div>
                 <div className='row'>
                   <div className='col-12'>
@@ -154,44 +178,59 @@ function ConsumptionHistoryItem({ item, onDelete, onUpdate }) {
               )}
             </div>
 
-            {isEditing ? (
-              <div className='mt-3'>
-                <input
-                  type='text'
-                  className='form-control mb-2'
-                  value={editDescription}
-                  onChange={(e) => setEditDescription(e.target.value)}
-                />
-                <button
-                  className='btn btn-primary me-2'
-                  onClick={handleUpdate}
-                  disabled={isUpdating}
-                >
-                  {isUpdating ? 'Updating...' : 'Update'}
-                </button>
-                <button
-                  className='btn btn-secondary'
-                  onClick={() => setIsEditing(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            ) : (
-              <div className='mt-3'>
-                <button
-                  className='btn btn-outline-primary me-2'
-                  onClick={handleEdit}
-                >
-                  Edit
-                </button>
-                <button
-                  className='btn btn-outline-danger'
-                  onClick={handleDelete}
-                >
-                  Delete
-                </button>
-              </div>
-            )}
+            <div className='container mb-2'>
+              {isEditing ? (
+                <div className='mt-3'>
+                  <input
+                    type='text'
+                    className='form-control mb-2'
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    disabled={isUploading}
+                  />
+                  <button
+                    className='btn btn-primary me-2 btn-sm'
+                    onClick={handleUpdate}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <>
+                        <span
+                          className='spinner-border spinner-border-sm me-2'
+                          role='status'
+                          aria-hidden='true'
+                        ></span>
+                        Updating...
+                      </>
+                    ) : (
+                      'Update'
+                    )}
+                  </button>
+                  <button
+                    className='btn btn-secondary btn-sm'
+                    onClick={() => setIsEditing(false)}
+                    disabled={isUploading}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <div className='mt-3'>
+                  <button
+                    className='btn btn-outline-primary me-2 btn-sm'
+                    onClick={handleEdit}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className='btn btn-outline-danger btn-sm'
+                    onClick={handleDelete}
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
           </>
         ) : (
           <button
