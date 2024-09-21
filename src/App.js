@@ -2,6 +2,7 @@ import './App.scss';
 import { IndexedDB }  from './SimpleIndexedDB'
 import ConsumedFood from './ConsumedFood';
 import ConsumptionHistoryItem from './ConsumptionHistoryItem'
+import UploadImage from './UploadImage'
 
 function App() {
   let consumptionHistory = [
@@ -16,9 +17,7 @@ function App() {
       </header>
       <div className='container'>
 
-        <div className='d-grid gap-2'>
-          <button className="btn btn-primary focus-ring">Upload</button>
-        </div>
+        <UploadImage />
 
         <h2 className='app-section-title'>Consumption History</h2>
         <ul className='list-group'>

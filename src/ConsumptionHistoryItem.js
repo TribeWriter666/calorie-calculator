@@ -7,7 +7,7 @@ function ConsumptionHistoryItem({item}) {
   if (expanded) {
     return (
       <div className='d-flex flex-column'>
-        <button className='btn d-flex w-100 justify-content-between' onClick={() => setExpanded(false)}>
+        <button className='btn m-0 d-flex w-100 justify-content-between' onClick={() => setExpanded(false)}>
           <span className="fw-semibold">{item.name}</span>
           <span><i className="bi bi-chevron-bar-up"></i></span>
         </button>
@@ -25,7 +25,7 @@ function ConsumptionHistoryItem({item}) {
 
   } else {
     return (
-      <button className="btn d-flex w-100 justify-content-between" onClick={() => setExpanded(true)}>
+      <button className="btn m-0 d-flex w-100 justify-content-between" onClick={() => setExpanded(true)}>
         <span>{item.name}</span>
         <span>{item.calories} Cal</span>
       </button>
