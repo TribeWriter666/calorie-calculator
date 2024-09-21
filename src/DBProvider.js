@@ -1,7 +1,7 @@
 
 
 /*The warpper for SImpleIndexedDB for persisitency across every component 
-By using "const db = userDB", you will get a SimpleIndexedDB obecjt for use
+By using "const db = useDB", you will get a SimpleIndexedDB obecjt for use
 
 
 */

@@ -5,7 +5,7 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 })
 
-export const analyzeImage = async (base64Image, description = '') => {
+export const analyzeImage = async (dataURL, description = '') => {
   try {
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-2024-08-06', // Use the appropriate model
@@ -27,7 +27,7 @@ export const analyzeImage = async (base64Image, description = '') => {
             {
               type: 'image_url',
               image_url: {
-                url: `data:image/jpeg;base64,${base64Image}`,
+                url: dataURL,
               },
             },
           ],
@@ -40,6 +40,7 @@ export const analyzeImage = async (base64Image, description = '') => {
           schema: {
             type: 'object',
             properties: {
+              food_name: {type: 'string'},
               description: { type: 'string' },
               calories: { type: 'number' },
               serving_size: { type: 'string' },
@@ -66,6 +67,7 @@ export const analyzeImage = async (base64Image, description = '') => {
               },
             },
             required: [
+              'food_name',
               'description',
               'calories',
               'serving_size',

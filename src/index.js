@@ -10,7 +10,6 @@ root.render(
   <React.StrictMode>
     <DBProvider>
     <App />
-
     </DBProvider>
   </React.StrictMode>
 );

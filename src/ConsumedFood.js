@@ -1,10 +1,12 @@
+//  macronutrients: { protein: '15g', carbohydrates: '40g', fats: '10g', fiber: '4g' },
 
 const nutritionTypes = [
-  {name: 'carbs', displayName: 'Carbohydrates', unit: 'g', caloriesPerUnit: 4},
-  {name: 'proteins', displayName: 'Proteins', unit: 'g', caloriesPerUnit: 4},
+  {name: 'carbohydrates', displayName: 'Carbohydrates', unit: 'g', caloriesPerUnit: 4},
+  {name: 'protein', displayName: 'Proteins', unit: 'g', caloriesPerUnit: 4},
   {name: 'fats', displayName: 'Fats', unit: 'g', caloriesPerUnit: 9},
-  {name: 'vitamins', displayName: 'Vitamins', unit: 'g', caloriesPerUnit: 0},
-  {name: 'minerals', displayName: 'Minerals', unit: 'g', caloriesPerUnit: 0},
+  {name: 'fiber', displayName: 'Fiber', unit: 'g', caloriesPerUnit: 0},
+  //{name: 'vitamins', displayName: 'Vitamins', unit: 'g', caloriesPerUnit: 0},
+  //{name: 'minerals', displayName: 'Minerals', unit: 'g', caloriesPerUnit: 0},
 ];
 
 /**
