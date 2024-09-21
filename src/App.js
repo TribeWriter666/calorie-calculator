@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import './App.scss'
 import ConsumedFood, { nutritionTypes } from './ConsumedFood'
 import ConsumptionHistoryItem from './ConsumptionHistoryItem'
 import UploadImage from './UploadImage'
 import { useDB } from './DBProvider'
-import UserProfile from './UserProfile';
+import UserProfile from './UserProfile'
 
 function App() {
   const [uploading, setUploading] = useState(false)
