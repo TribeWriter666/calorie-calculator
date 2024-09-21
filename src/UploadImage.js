@@ -56,11 +56,11 @@ export default function UploadImage({ setUploading }) {
           const base64Data = await fileToBase64(fileState)
           const result = await analyzeImage(base64Data)
 
-          // Add upload date and time to the result
           const uploadDateTime = new Date().toISOString()
           const dataToStore = {
             ...result,
             uploadDateTime: uploadDateTime,
+            imageBlob: fileState, // Store the image file as a Blob
           }
 
           const id = await db.addItem(dataToStore)

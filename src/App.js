@@ -18,7 +18,7 @@ function App() {
         const consumedFoodList = list
           .map((item) => new ConsumedFood(item))
           .sort(
-            (a, b) => new Date(b.uploadDateTime) - new Date(a.uploadDateTime)
+            (a, b) => new Date(a.uploadDateTime) - new Date(b.uploadDateTime)
           )
         setResponseList(consumedFoodList)
         console.log('list setted')
