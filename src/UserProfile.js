@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDB } from './DBProvider';
 
-const UserProfile = () => {
+const UserProfile = ({ consumedFoodList }) => {
   const [sex, setSex] = useState('');
   const [age, setAge] = useState('');
   const [height, setHeight] = useState('');
@@ -31,32 +31,18 @@ const UserProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const numAge = parseInt(age);
-    const numHeight = parseInt(height);
-    const numWeight = parseInt(weight);
-
-    // Ensure valid values
-    if (numAge <= 0 || numHeight <= 0 || numWeight <= 0) {
-        alert("Please enter valid positive numbers for age, height, and weight.");
-        return;
-    }
-
     const userProfile = {
       id: 'userProfile',
       sex,
-      age: numAge,
-      height: numHeight,
-      weight: numWeight,
+      age: parseInt(age),
+      height: parseInt(height),
+      weight: parseInt(weight),
       activityLevel
     };
-
     await db.updateItem(userProfile);
     setProfileSubmitted(true);
     calculateRDI(userProfile);
-    alert('Profile updated successfully!');
-};
-
+  };
 
   const calculateRDI = (profile) => {
     // Basic BMR calculation using Harris-Benedict equation
@@ -95,16 +81,51 @@ const UserProfile = () => {
     setRdi(calculatedRdi);
   };
 
+  const calculateTotalConsumption = () => {
+    return consumedFoodList.reduce((total, food) => {
+      total.calories += food.calories || 0;
+      total.carbohydrates += food.nutritions.carbohydrates || 0;
+      total.protein += food.nutritions.protein || 0;
+      total.fats += food.nutritions.fats || 0;
+      total.fiber += food.nutritions.fiber || 0;
+      return total;
+    }, {
+      calories: 0,
+      carbohydrates: 0,
+      protein: 0,
+      fats: 0,
+      fiber: 0
+    });
+  };
+
+  const renderNutritionComparison = () => {
+    const totalConsumption = calculateTotalConsumption();
+    const nutritionTypes = ['calories', 'carbohydrates', 'protein', 'fats', 'fiber'];
+
+    return nutritionTypes.map(type => {
+      const consumed = totalConsumption[type];
+      const recommended = rdi[type];
+      const difference = consumed - recommended;
+      const status = difference > 0 ? 'over' : 'under';
+
+      return (
+        <div key={type} className="mb-2">
+          <strong className="text-capitalize">{type}:</strong>
+          <br />
+          Consumed: {consumed.toFixed(1)} {type === 'calories' ? 'kcal' : 'g'} | 
+          RDI: {recommended} {type === 'calories' ? 'kcal' : 'g'} | 
+          {Math.abs(difference).toFixed(1)} {type === 'calories' ? 'kcal' : 'g'} {status} RDI
+        </div>
+      );
+    });
+  };
+
   if (profileSubmitted && rdi) {
     return (
       <div className="user-profile mb-4">
-        <h2>Your Recommended Daily Intake</h2>
-        <p>Calories: {rdi.calories} kcal</p>
-        <p>Carbohydrates: {rdi.carbohydrates} g</p>
-        <p>Protein: {rdi.protein} g</p>
-        <p>Fats: {rdi.fats} g</p>
-        <p>Fiber: {rdi.fiber} g</p>
-        <button onClick={() => setProfileSubmitted(false)} className="btn btn-secondary">Edit Profile</button>
+        <h2>Your Nutrition Summary</h2>
+        {renderNutritionComparison()}
+        <button onClick={() => setProfileSubmitted(false)} className="btn btn-secondary mt-3">Edit Profile</button>
       </div>
     );
   }
