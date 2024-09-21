@@ -17,20 +17,32 @@ export const nutritionTypes = [
  */
 class ConsumedFood {
   constructor(data) {
-    this.name = data.food_name
-    this.description = data.description
-    this.calories = data.calories
-    this.serving_size = data.serving_size
-    this.confidence_score = data.confidence_score
+    this.id = data.id
+    this.name = data.food_name || ''
+    this.description = data.description || ''
+    this.calories = data.calories || 0
+    this.serving_size = data.serving_size || ''
+    this.confidence_score = data.confidence_score || 0
     this.nutritions = {
-      carbohydrates: parseInt(data.macronutrients.carbohydrates),
-      protein: parseInt(data.macronutrients.protein),
-      fats: parseInt(data.macronutrients.fats),
-      fiber: parseInt(data.macronutrients.fiber),
+      carbohydrates: this.parseNutrition(data.macronutrients?.carbohydrates),
+      protein: this.parseNutrition(data.macronutrients?.protein),
+      fats: this.parseNutrition(data.macronutrients?.fats),
+      fiber: this.parseNutrition(data.macronutrients?.fiber),
     }
-    this.exercise_equivalent = data.exercise_equivalent
+    this.exercise_equivalent = data.exercise_equivalent || {
+      walking_minutes: 0,
+      notes: '',
+    }
     this.uploadDateTime = data.uploadDateTime || new Date().toISOString()
-    this.imageURL = data.imageURL || null // Add this line
+    this.imageURL = data.imageURL || null
+  }
+
+  parseNutrition(value) {
+    if (typeof value === 'string') {
+      const numericValue = parseInt(value, 10)
+      return isNaN(numericValue) ? 0 : numericValue
+    }
+    return value || 0
   }
 }
 

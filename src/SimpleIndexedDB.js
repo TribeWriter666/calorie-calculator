@@ -138,6 +138,11 @@ export default class SimpleIndexedDB {
    */
   deleteItem(id) {
     return new Promise((resolve, reject) => {
+      if (id === undefined) {
+        reject('No ID provided for deletion')
+        return
+      }
+
       const transaction = this.db.transaction([this.storeName], 'readwrite')
       const store = transaction.objectStore(this.storeName)
 
@@ -148,7 +153,7 @@ export default class SimpleIndexedDB {
       }
 
       request.onerror = (event) => {
-        reject(`Failed to delete item: ${event.target.errorCode}`)
+        reject(`Failed to delete item: ${event.target.error}`)
       }
     })
   }

@@ -14,19 +14,61 @@ function App() {
   useEffect(() => {
     const fetch_data = async () => {
       if (db) {
-        let list = await db.getAllItems()
-        const consumedFoodList = list
-          .map((item) => new ConsumedFood(item))
-          .sort(
-            (a, b) => new Date(a.uploadDateTime) - new Date(b.uploadDateTime)
-          )
-        setResponseList(consumedFoodList)
-        console.log('list setted')
-        console.log(responseList)
+        try {
+          let list = await db.getAllItems()
+          const consumedFoodList = list
+            .map((item) => {
+              try {
+                const consumedFood = new ConsumedFood(item)
+                console.log('Created ConsumedFood object:', consumedFood)
+                return consumedFood
+              } catch (error) {
+                console.error(
+                  'Error creating ConsumedFood object:',
+                  error,
+                  item
+                )
+                return null
+              }
+            })
+            .filter(Boolean) // Remove any null items
+            .sort(
+              (a, b) => new Date(b.uploadDateTime) - new Date(a.uploadDateTime)
+            )
+          setResponseList(consumedFoodList)
+        } catch (error) {
+          console.error('Error fetching data:', error)
+          setdbError(error.message)
+        }
       }
     }
     fetch_data()
   }, [db, uploading])
+
+  const handleDelete = async (id) => {
+    console.log('Deleting item with id:', id) // Add this line
+    if (db && id !== undefined) {
+      try {
+        await db.deleteItem(id)
+        setResponseList((prevList) => prevList.filter((item) => item.id !== id))
+      } catch (error) {
+        console.error('Error deleting item:', error)
+      }
+    } else {
+      console.error('Invalid id or database not initialized')
+    }
+  }
+
+  const handleUpdate = async (updatedItem) => {
+    if (db) {
+      await db.updateItem(updatedItem)
+      setResponseList((prevList) =>
+        prevList.map((item) =>
+          item.id === updatedItem.id ? updatedItem : item
+        )
+      )
+    }
+  }
 
   return (
     <div className='app'>
@@ -41,9 +83,13 @@ function App() {
 
         <h2 className='app-section-title'>Consumption History</h2>
         <ul className='list-group'>
-          {responseList.map((item, index) => (
-            <li key={index} className='list-group-item p-0'>
-              <ConsumptionHistoryItem item={item} />
+          {responseList.map((item) => (
+            <li key={item.id} className='list-group-item p-0'>
+              <ConsumptionHistoryItem
+                item={item}
+                onDelete={handleDelete}
+                onUpdate={handleUpdate}
+              />
             </li>
           ))}
         </ul>

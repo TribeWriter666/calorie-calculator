@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react'
 import { nutritionTypes } from './ConsumedFood'
+import { analyzeImage } from './analyzeImage'
 
-function ConsumptionHistoryItem({ item }) {
+function ConsumptionHistoryItem({ item, onDelete, onUpdate }) {
   const [expanded, setExpanded] = useState(false)
   const [imageURL, setImageURL] = useState(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const [editDescription, setEditDescription] = useState(item.description)
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  console.log('ConsumptionHistoryItem received item:', item) // Add this line
 
   useEffect(() => {
     if (item.imageURL) {
@@ -21,6 +27,33 @@ function ConsumptionHistoryItem({ item }) {
     const day = date.getDate()
     const month = date.toLocaleString('default', { month: 'short' }).slice(0, 3)
     return `${day} ${month}`
+  }
+
+  const handleEdit = () => {
+    setIsEditing(true)
+    setEditDescription(item.description)
+  }
+
+  const handleUpdate = async () => {
+    setIsUpdating(true)
+    try {
+      const updatedAnalysis = await analyzeImage(item.imageURL, editDescription)
+      if (updatedAnalysis) {
+        onUpdate({ ...item, ...updatedAnalysis })
+        setIsEditing(false)
+      } else {
+        console.error('Failed to update analysis')
+      }
+    } catch (error) {
+      console.error('Error updating entry:', error)
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  const handleDelete = () => {
+    console.log('Deleting item:', item) // Add this line
+    onDelete(item.id)
   }
 
   return (
@@ -120,6 +153,45 @@ function ConsumptionHistoryItem({ item }) {
                 </div>
               )}
             </div>
+
+            {isEditing ? (
+              <div className='mt-3'>
+                <input
+                  type='text'
+                  className='form-control mb-2'
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                />
+                <button
+                  className='btn btn-primary me-2'
+                  onClick={handleUpdate}
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? 'Updating...' : 'Update'}
+                </button>
+                <button
+                  className='btn btn-secondary'
+                  onClick={() => setIsEditing(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div className='mt-3'>
+                <button
+                  className='btn btn-outline-primary me-2'
+                  onClick={handleEdit}
+                >
+                  Edit
+                </button>
+                <button
+                  className='btn btn-outline-danger'
+                  onClick={handleDelete}
+                >
+                  Delete
+                </button>
+              </div>
+            )}
           </>
         ) : (
           <button
