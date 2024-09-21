@@ -1,5 +1,6 @@
 import {useState,useContext} from 'react'
 import { useDB } from './DBProvider';
+import './UploadImage.css'
 
 export default function UploadImage() {
         const  [selectedImage,setSelectedImage] = useState(null);
@@ -30,10 +31,11 @@ export default function UploadImage() {
         return (
                 <div className ="image-upload">
                         {/*Image selector */}
-                        <input type='file' accept='image/*' onChange={handleImageChange}></input>
+                        <label htmlFor="file-upload">Choose an Image</label>
+                        <input id ='file-upload' type='file' accept='image/*' onChange={handleImageChange}></input>
                         {/* Image preview */}
                         <div className='iamge-preview'>
-                                <img src = {previewURL} alt = "image preview" width={400} height={400}></img>
+                                <img src = {previewURL} alt = "image preview"></img>
                         </div>
 
                         {/*Upload button*/}
