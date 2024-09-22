@@ -40,7 +40,7 @@ export const analyzeImage = async (dataURL, description = '') => {
           schema: {
             type: 'object',
             properties: {
-              food_name: {type: 'string'},
+              food_name: { type: 'string' },
               description: { type: 'string' },
               calories: { type: 'number' },
               serving_size: { type: 'string' },
@@ -81,6 +81,7 @@ export const analyzeImage = async (dataURL, description = '') => {
         },
       },
       max_tokens: 500,
+      temperature: 0.5,
     })
 
     console.log('OpenAI API Response:', response)
